@@ -1,0 +1,345 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+
+```{r}
+install.packages ("tidyverse")
+install.packages ("janitor")
+
+library(tidyverse)
+library(janitor)
+
+getwd()
+
+setwd ("C:/Users/danabr/Documents/R Projects")
+
+read.csv("FIRE1.CSV")
+
+
+FIREdf <- read.csv("FIRE1.CSV")
+View(FIREdf)
+
+summarize (FIREdf, n())
+
+mean(FIREdf$Age, na.rm = TRUE)
+mean(FIREdf$MCAT, na.rm = TRUE)
+mean(FIREdf$MCAT.Takes, na.rm = TRUE)
+mean(FIREdf$UG.Sci.GPA, na.rm = TRUE)
+mean(FIREdf$COMSAE, na.rm = TRUE)
+
+colMeans(FIREdf[ , c(10,11,15,17,49)], na.rm = TRUE)
+
+
+library(tidyr)
+library(dplyr)
+library(ggplot2)
+
+ggplot(FIRE_long, aes(x = Value, fill = Variable)) +
+  geom_histogram(color = "black", alpha = 0.7, bins = 30) + 
+  facet_wrap(~ Variable, scales = "free", ncol = 2) +
+  theme_minimal(base_size = 16) +
+  theme(
+    legend.position = "none",
+    strip.text = element_text(face = "bold", size = 18, color = "black"),
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 22),
+    axis.title = element_text(face = "bold", size = 18),
+    axis.text = element_text(size = 14),
+    panel.spacing = unit(1.5, "lines")  
+  ) +
+  scale_y_continuous(expand = expansion(mult = c(0, 0.1))) + 
+  scale_fill_brewer(palette = "Set2") + 
+  labs(
+    title = "Distributions of Age, MCAT, MCAT Takes, UG Sci GPA, and COMSAE",
+    x = "Value",
+    y = "Number of Students"
+  )
+
+ggsave("my_histograms.png", width = 12, height = 8, dpi = 300)
+
+
+table(FIREdf$FIREParticipant, useNA = "ifany")
+
+FIREdf$FIREParticipant<-factor(FIREdf$FIREParticipant,levels = c(1,0),labels = c("Yes","No"))
+FIREdf$Received.GED<-factor(FIREdf$Received.GED,levels = c(0,1),labels = c("No","Yes"))
+FIREdf$From.a.family.that.Received.Public.Assistance<-factor(FIREdf$From.a.family.that.Received.Public.Assistance,levels = c(0,1),labels = c("No","Yes"))
+FIREdf$HS.50..or.less.go.to.College<-factor(FIREdf$HS.50..or.less.go.to.College,levels = c(1,0),labels = c("Yes","No"))
+FIREdf$First.Gen<-factor(FIREdf$First.Gen,levels = c(0,1),labels = c("No","Yes"))
+FIREdf$HS.Free.or.Reduced.Price.Lunch<-factor(FIREdf$HS.Free.or.Reduced.Price.Lunch,levels = c(0,1),labels = c("No","Yes"))
+FIREdf$COMLEX<-factor(FIREdf$COMLEX,levels = c("F","P"),labels = c("No","Yes"))
+FIREdf$UG.Sci.Major<-factor(FIREdf$UG.Sci.Major,levels = c("0","1"),labels = c("No","Yes"))
+FIREdf$UG.Sci.Major<-factor(FIREdf$UG.Sci.Major,levels = c("0","1"),labels = c("No","Yes"))
+FIREdf$UG.SCI.GPA...3.4<-factor(FIREdf$UG.SCI.GPA...3.4,levels = c("0","1"),labels = c("No","Yes"))
+FIREdf$Non.Traditional.25.<-factor(FIREdf$Non.Traditional.25.,levels = c("0","1"),labels = c("No","Yes"))
+FIREdf$Out.of.UG.2.Years<-factor(FIREdf$Out.of.UG.2.Years,levels = c("0","1"),labels = c("No","Yes"))
+
+table(FIREdf$FIREParticipant, useNA = "ifany")
+
+install.packages("janitor")
+
+library(janitor)
+
+tabyl(FIREdf$FIREParticipant)
+tabyl(FIREdf$Received.GED)
+tabyl(FIREdf$From.a.family.that.Received.Public.Assistance)
+tabyl(FIREdf$HS.50..or.less.go.to.College)
+tabyl(FIREdf$First.Gen)
+tabyl(FIREdf$HS.Free.or.Reduced.Price.Lunch)
+tabyl(FIREdf$COMLEX)
+tabyl(FIREdf$UG.Sci.Major)
+tabyl(FIREdf$UG.SCI.GPA...3.4)
+tabyl(FIREdf$Non.Traditional.25.)
+tabyl(FIREdf$Out.of.UG.2.Years)
+
+
+library(dplyr)
+
+rm(summary_table)
+
+library(dplyr)
+
+summary_table <- tibble(
+  Category = c(
+    "FIRE Participant", 
+    "Received GED",
+    "Family Received Public Assistance",
+    "HS <50% College Attendance",
+    "First Generation",
+    "HS Free/Reduced Lunch",
+    "Passed COMLEX",
+    "UG Science Major",
+    "UG Science GPA < 3.4",
+    "Non-Traditional Student",
+    "UG Graduation Date > 2 Years Ago"
+  ),
+  Percent_Yes = c(
+    mean(FIREdf$FIREParticipant == "Yes", na.rm = TRUE) * 100,
+    mean(FIREdf$Received.GED == "Yes", na.rm = TRUE) * 100,
+    mean(FIREdf$From.a.family.that.Received.Public.Assistance == "Yes", na.rm = TRUE) * 100,
+    mean(FIREdf$HS.50..or.less.go.to.College == "Yes", na.rm = TRUE) * 100,
+    mean(FIREdf$First.Gen == "Yes", na.rm = TRUE) * 100,
+    mean(FIREdf$HS.Free.or.Reduced.Price.Lunch == "Yes", na.rm = TRUE) * 100,
+    mean(FIREdf$COMLEX == "Yes", na.rm = TRUE) * 100,
+    mean(FIREdf$UG.Sci.Major == "Yes", na.rm = TRUE) * 100,
+    mean(FIREdf$UG.SCI.GPA...3.4 == "Yes", na.rm = TRUE) * 100,          
+    mean(FIREdf$Non.Traditional.25. == "Yes", na.rm = TRUE) * 100, 
+    mean(FIREdf$Out.of.UG.2.Years == "Yes", na.rm = TRUE) * 100  
+  )
+)
+
+
+library(ggplot2)
+
+
+
+ggplot(summary_table, aes(x = reorder(Category, Percent_Yes), y = Percent_Yes)) +
+  geom_col(fill = "steelblue") +
+  coord_flip() +
+  labs(
+    title = "Student Background Characteristics and Academic Indicators",
+    x = "Indicator",
+    y = "Percent 'Yes'"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 20),
+    axis.title = element_text(face = "bold", size = 16),
+    axis.text = element_text(size = 12),
+    plot.margin = margin(1, 1, 1, 2, "cm")  # extra margin to avoid cut-off labels
+  )
+
+library(ggplot2)
+
+ggplot(summary_table, aes(x = reorder(Category, Percent_Yes), y = Percent_Yes)) +
+  geom_col(fill = "steelblue") +
+  geom_text(
+    aes(label = paste0(round(Percent_Yes, 1), "%")),
+    hjust = -0.2,     # Shift labels slightly to the right
+    size = 5,         # Bigger text size for clarity
+    fontface = "bold" # Bold font for stronger emphasis
+  ) +
+  coord_flip() +
+  labs(
+    title = "Student Background Characteristics and Academic Indicators",
+    x = "Indicator",
+    y = "Percent 'Yes'"
+  ) +
+  theme_minimal(base_size = 16) +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 24),
+    axis.title = element_text(face = "bold", size = 18),
+    axis.text = element_text(size = 14),
+    plot.margin = margin(1, 1, 1, 2, "cm")
+  ) +
+  ylim(0, max(summary_table$Percent_Yes) + 10)  # give space for text above bars
+
+
+
+ggsave("student_background_characteristics.png", width = 12, height = 8, dpi = 300)
+
+
+rm(quantdf)
+
+quantdf<-FIREdf[c(9,10,14,16,49)]
+View(quantdf)
+
+
+quantdfn<-scale(quantdf)
+View(quantdfn)
+
+set.seed(42)
+
+wss<-function(k){kmeans(quantdfn, k, nstart=10)} $tot.withinss
+
+k_values<- 1:10
+
+wss_values<-map_dbl(k_values, wss)
+
+elbowdf<- data.frame(k_values, wss_values)
+
+ggplot(elbowdf, mapping = aes(x = k_values, y = wss_values)) +
+  geom_line() + geom_point()
+
+ggsave("elbow_plot.png", width = 10, height = 7, dpi = 300)
+
+k4<-kmeans(quantdfn, 4, nstart=1000)
+
+str(k4)
+
+k4
+
+library(ggplot2)
+library(tibble)
+
+# Create a small dataframe for cluster sizes
+cluster_sizes <- tibble(
+  Cluster = factor(c("Cluster 1", "Cluster 2", "Cluster 3", "Cluster 4")),
+  Size = c(23, 15, 3, 12)
+)
+
+
+ggplot(cluster_sizes, aes(x = Cluster, y = Size, fill = Cluster)) +
+  geom_col(width = 0.6) +
+  geom_text(aes(label = Size), vjust = -0.5, size = 5, fontface = "bold") +
+  scale_fill_brewer(palette = "Set2") +  # Nice clean color palette
+  labs(
+    title = "Number of Students in Each Cluster",
+    x = "Cluster",
+    y = "Number of Students"
+  ) +
+  theme_minimal(base_size = 16) +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 20),
+    axis.title = element_text(face = "bold", size = 16),
+    axis.text = element_text(size = 14),
+    legend.position = "none",
+    plot.margin = margin(1, 1, 1, 1, "cm")
+  )
+
+ggsave("Clusters.png", width = 12, height = 8, dpi = 300)
+
+library(ggplot2)
+
+
+variance_data <- data.frame(
+  Category = c("Explained by Clusters", "Unexplained"),
+  Percent = c(48.5, 51.5)
+)
+
+
+ggplot(variance_data, aes(x = Category, y = Percent, fill = Category)) +
+  geom_col(width = 0.6) +
+  geom_text(aes(label = paste0(Percent, "%")),
+            vjust = -0.5,
+            size = 5,
+            fontface = "bold") +
+  scale_fill_manual(values = c("steelblue", "lightgray")) +  # Custom colors
+  labs(
+    title = "Variance Explained by Clustering",
+    x = NULL,
+    y = "Percentage"
+  ) +
+  ylim(0, 100) +
+  theme_minimal(base_size = 16) +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 20),
+    axis.text.x = element_text(size = 14),
+    axis.text.y = element_text(size = 12),
+    axis.title.y = element_text(face = "bold", size = 16),
+    legend.position = "none",
+    plot.margin = margin(1, 1, 1, 1, "cm")
+  )
+
+
+ggsave("variance_explained_bar_chart.png", width = 8, height = 6, dpi = 300)
+
+install.packages("fpc")
+
+library(fpc)
+
+cluster.stats(dist(quantdfn, method="euclidean"), k4$cluster)
+
+summarize_all(quantdf, mean)
+
+library(tibble)
+library(ggplot2)
+library(gridExtra)
+library(grid)
+
+
+cohort_summary <- tibble(
+  Variable = c("MCAT", "MCAT Takes", "UG Sci GPA", "Age", "COMSAE Score"),
+  Mean = c(502.3, 1.7, 3.42, 25.6, 585.4)
+)
+
+
+table_plot <- tableGrob(cohort_summary)
+
+
+png("cohort_summary_table.png", width = 800, height = 300)
+grid.draw(table_plot)
+dev.off()
+
+
+quantdfk4<-cbind(quantdf, clusterID=k4$cluster)
+View(quantdfk4)
+
+quantdfk4 %>%
+  group_by(clusterID) %>%
+  summarize_all(mean)
+
+
+library(tibble)
+library(gridExtra)
+library(grid)
+
+
+cluster_profiles <- tibble(
+  Cluster = c("Cluster 1", "Cluster 2", "Cluster 3", "Cluster 4"),
+  MCAT = c(498.3478, 496.7333, 492.0000, 507.1667),
+  MCAT_Takes = c(1.478261, 3.000000, 1.000000, 1.333333),
+  UG_Sci_GPA = c(3.288261, 3.453333, 3.176667, 3.725000),
+  Age = c(26.91304, 26.73333, 36.00000, 25.91667),
+  COMSAE = c(346.6957, 300.7333, 410.0000, 405.9167)
+)
+
+
+table_plot <- tableGrob(cluster_profiles)
+
+
+png("cluster_profiles_table.png", width = 1000, height = 400)
+grid.draw(table_plot)
+dev.off()
+
+
+```
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
